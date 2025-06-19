@@ -251,7 +251,7 @@ class ApiClient {
         endpoint: endpoint.endpoint,
         methods: endpoint.methods,
         category: endpoint.category,
-        description: endpoint.description,
+        description: endpoint.description || `${categoryInfo.name} endpoint`,
         authentication: 'Required - API key in Authorization header',
         response_fields: {
           'success': 'Boolean indicating request success',
