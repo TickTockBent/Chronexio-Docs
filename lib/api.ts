@@ -1,4 +1,4 @@
-import { API_CONFIG } from './constants';
+import { API_CONFIG, API_CATEGORIES } from './constants';
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -129,17 +129,80 @@ class ApiClient {
   }
 
   async getApiDocumentation(category?: string): Promise<DocsApiResponse> {
-    const response = await this.fetchApi<DocsApiResponse>(
-      category ? `${API_CONFIG.docsEndpoint}?category=${category}` : API_CONFIG.docsEndpoint
-    );
-    
-    if (!response.success || !response.data) {
-      // Return fallback data for build time
+    try {
+      // Get the main API info that contains all endpoints
+      const response = await fetch(`${this.baseUrl}/v1`, {
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const apiInfo = await response.json();
+      
+      // Transform the API info into the expected format
+      const categories: Record<string, CategoryInfo> = {};
+      const endpoints: EndpointInfo[] = [];
+      
+      if (apiInfo.endpoints) {
+        Object.entries(apiInfo.endpoints).forEach(([categoryKey, categoryEndpoints]) => {
+          const categoryInfo = API_CATEGORIES[categoryKey as keyof typeof API_CATEGORIES];
+          
+          if (categoryInfo && Array.isArray(categoryEndpoints)) {
+            const categoryEndpointList: EndpointInfo[] = [];
+            
+            (categoryEndpoints as string[]).forEach((endpointString: string) => {
+              const [method, path] = endpointString.split(' ');
+              const endpoint: EndpointInfo = {
+                endpoint: path,
+                category: categoryKey,
+                methods: [method],
+                description: `${categoryInfo.title} - ${path}`,
+                documentation_url: `/api/${categoryKey}#${path.replace(/\//g, '-')}`
+              };
+              
+              categoryEndpointList.push(endpoint);
+              if (!category || category === categoryKey) {
+                endpoints.push(endpoint);
+              }
+            });
+            
+            categories[categoryKey] = {
+              name: categoryInfo.title,
+              description: categoryInfo.description,
+              endpoints: categoryEndpointList,
+              subcategories: []
+            };
+          }
+        });
+      }
+      
       return {
         api_version: 'v1',
         documentation_version: '1.0.0',
-        total_endpoints: 50,
-        filtered_endpoints: 50,
+        total_endpoints: endpoints.length,
+        filtered_endpoints: endpoints.length,
+        last_updated: new Date().toISOString(),
+        categories,
+        endpoints,
+        features: {
+          authentication_required: true,
+          examples_included: true,
+          openapi_available: false,
+          interactive_testing: false,
+        },
+      };
+      
+    } catch (error) {
+      console.error('API documentation fetch failed:', error);
+      // Return fallback data
+      return {
+        api_version: 'v1',
+        documentation_version: '1.0.0',
+        total_endpoints: 0,
+        filtered_endpoints: 0,
         last_updated: new Date().toISOString(),
         categories: {},
         endpoints: [],
@@ -151,17 +214,73 @@ class ApiClient {
         },
       };
     }
-
-    return response.data;
   }
 
   async getCategoryDocumentation(category: string): Promise<CategoryDocumentation> {
-    const response = await this.fetchApi<CategoryDocumentation>(
-      `${API_CONFIG.docsEndpoint}/${category}`
-    );
-    
-    if (!response.success || !response.data) {
-      // Return fallback data for build time
+    try {
+      // Get the main API documentation and filter for this category
+      const apiDocs = await this.getApiDocumentation(category);
+      const categoryInfo = apiDocs.categories[category];
+      
+      if (!categoryInfo) {
+        return {
+          category,
+          description: `${category} API endpoints`,
+          endpoints: [],
+          total_endpoints: 0,
+        };
+      }
+      
+      // Convert EndpointInfo to EndpointDocumentation format
+      const endpoints: EndpointDocumentation[] = categoryInfo.endpoints.map(endpoint => ({
+        endpoint: endpoint.endpoint,
+        methods: endpoint.methods,
+        category: endpoint.category,
+        description: endpoint.description || `${categoryInfo.name} endpoint`,
+        authentication: 'Required - API key in Authorization header',
+        response_fields: {
+          'success': 'Boolean indicating request success',
+          'data': 'Response payload containing the requested data',
+          'meta': 'Request metadata including timestamp and request_id'
+        },
+        response_examples: {
+          'success': {
+            success: true,
+            data: { example: 'Response data varies by endpoint' },
+            meta: { timestamp: new Date().toISOString(), request_id: 'uuid' }
+          }
+        },
+        tier_access: {
+          'free': 'Limited requests per month',
+          'developer': 'Higher rate limits',
+          'team': 'Team features and analytics',
+          'enterprise': 'Enterprise features and support'
+        },
+        rate_limits: {
+          'free': '1,000 requests/month',
+          'developer': '50,000 requests/month',
+          'team': '500,000 requests/month',
+          'enterprise': 'Custom limits'
+        }
+      }));
+      
+      return {
+        category,
+        description: categoryInfo.description,
+        endpoints,
+        total_endpoints: endpoints.length,
+        examples: {
+          basic: `curl -H "Authorization: Bearer cx_live_your_api_key" https://api.chronexio.com${endpoints[0]?.endpoint || '/v1/' + category}`
+        },
+        getting_started: {
+          step1: 'Get an API key from https://portal.chronexio.com',
+          step2: 'Include the API key in the Authorization header',
+          step3: 'Make requests to the endpoints listed below'
+        }
+      };
+      
+    } catch (error) {
+      console.error(`Category documentation fetch failed for ${category}:`, error);
       return {
         category,
         description: `${category} API endpoints`,
@@ -169,8 +288,6 @@ class ApiClient {
         total_endpoints: 0,
       };
     }
-
-    return response.data;
   }
 
   async getEndpointDocumentation(path: string): Promise<EndpointDocumentation> {
