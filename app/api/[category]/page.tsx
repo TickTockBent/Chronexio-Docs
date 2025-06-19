@@ -156,15 +156,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className="flex items-center space-x-2">
-                          {endpoint.methods.map((method) => (
-                            <Badge 
-                              key={method} 
-                              className={HTTP_METHODS[method as keyof typeof HTTP_METHODS]?.color || 'badge-default'}
-                              size="sm"
-                            >
-                              {method}
-                            </Badge>
-                          ))}
+                          {endpoint.methods.map((method) => {
+                            const methodConfig = HTTP_METHODS[method as keyof typeof HTTP_METHODS];
+                            return (
+                              <span 
+                                key={method} 
+                                className={`${methodConfig?.color || 'badge-default'} text-xs font-medium px-2 py-0.5 rounded-full`}
+                              >
+                                {method}
+                              </span>
+                            );
+                          })}
                         </div>
                         <code className="text-sm font-code text-gray-900 dark:text-white">
                           {endpoint.endpoint}

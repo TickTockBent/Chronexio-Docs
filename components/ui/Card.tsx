@@ -9,8 +9,8 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function Card({ className, interactive = false, asChild, children, ...props }: CardProps) {
   const classes = cn(
-    'bg-white border border-gray-200 rounded-xl p-6 shadow-sm',
-    interactive && 'hover:shadow-md hover:border-primary/20 transition-all duration-200 cursor-pointer',
+    'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm',
+    interactive && 'hover:shadow-md hover:border-primary/20 dark:hover:border-primary/40 transition-all duration-200 cursor-pointer',
     className
   );
 
@@ -46,7 +46,7 @@ interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
 
 export function CardTitle({ className, children, ...props }: CardTitleProps) {
   return (
-    <h3 className={cn('text-lg font-semibold text-gray-900', className)} {...props}>
+    <h3 className={cn('text-lg font-semibold text-gray-900 dark:text-white', className)} {...props}>
       {children}
     </h3>
   );
@@ -58,7 +58,7 @@ interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement
 
 export function CardDescription({ className, children, ...props }: CardDescriptionProps) {
   return (
-    <p className={cn('text-sm text-gray-600', className)} {...props}>
+    <p className={cn('text-sm text-gray-600 dark:text-gray-300', className)} {...props}>
       {children}
     </p>
   );

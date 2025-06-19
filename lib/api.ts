@@ -154,12 +154,81 @@ class ApiClient {
             const categoryEndpointList: EndpointInfo[] = [];
             
             (categoryEndpoints as string[]).forEach((endpointString: string) => {
-              const [method, path] = endpointString.split(' ');
+              // Split by whitespace and filter out empty strings to handle multiple spaces
+              const parts = endpointString.split(/\s+/).filter(part => part.length > 0);
+              const [method, path] = parts;
+              
+              // Generate better descriptions based on the endpoint path
+              const getEndpointDescription = (path: string, category: string) => {
+                const pathParts = path.split('/').filter(p => p);
+                const lastPart = pathParts[pathParts.length - 1];
+                
+                switch (category) {
+                  case 'uuid':
+                    if (lastPart.startsWith('v') && lastPart.length === 2) {
+                      return `Generate UUID ${lastPart.toUpperCase()}`;
+                    } else if (lastPart === 'bulk') {
+                      return 'Generate multiple UUIDs in a single request';
+                    } else if (lastPart === 'validate') {
+                      return 'Validate UUID format and version';
+                    } else if (lastPart === 'ct-uuidv8') {
+                      return 'Generate ChronexTime UUID v8 with embedded timestamp';
+                    }
+                    break;
+                  case 'hash':
+                    if (lastPart === 'string') {
+                      return 'Hash text strings using various algorithms';
+                    } else if (lastPart === 'file') {
+                      return 'Generate hash of uploaded files';
+                    } else if (lastPart === 'batch') {
+                      return 'Hash multiple items in one request';
+                    }
+                    break;
+                  case 'random':
+                    if (lastPart === 'string') {
+                      return 'Generate random strings with custom length and charset';
+                    } else if (lastPart === 'bytes') {
+                      return 'Generate cryptographically secure random bytes';
+                    } else if (lastPart === 'nonce') {
+                      return 'Generate cryptographic nonce values';
+                    } else if (lastPart === 'salt') {
+                      return 'Generate random salt for password hashing';
+                    } else if (lastPart.includes('token')) {
+                      return `Generate secure ${lastPart.replace('token/', '').replace('-', ' ')} tokens`;
+                    } else if (lastPart.includes('id')) {
+                      return `Generate unique ${lastPart.replace('-', ' ')} identifiers`;
+                    }
+                    break;
+                  case 'text':
+                    if (path.includes('analyze')) {
+                      return `Analyze text for ${lastPart} extraction`;
+                    } else if (path.includes('extract')) {
+                      return `Extract ${lastPart} from text content`;
+                    } else if (path.includes('validate')) {
+                      return `Validate ${lastPart} format and structure`;
+                    } else if (path.includes('generate')) {
+                      return `Generate ${lastPart} text content`;
+                    }
+                    break;
+                  case 'convert':
+                    if (lastPart === 'encode') {
+                      return 'Encode data in various formats (base64, hex, etc.)';
+                    } else if (lastPart === 'decode') {
+                      return 'Decode data from various formats';
+                    } else if (lastPart === 'batch') {
+                      return 'Encode multiple items in one request';
+                    }
+                    break;
+                }
+                
+                return `${categoryInfo.title} API endpoint: ${path}`;
+              };
+              
               const endpoint: EndpointInfo = {
                 endpoint: path,
                 category: categoryKey,
                 methods: [method],
-                description: `${categoryInfo.title} - ${path}`,
+                description: getEndpointDescription(path, categoryKey),
                 documentation_url: `/api/${categoryKey}#${path.replace(/\//g, '-')}`
               };
               
