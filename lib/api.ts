@@ -333,6 +333,19 @@ class ApiClient {
         response_examples: {}
       };
       
+      // Add parameters if available
+      if (endpointData.parameters && typeof endpointData.parameters === 'object') {
+        documentation.parameters = {};
+        Object.entries(endpointData.parameters).forEach(([paramName, paramData]: [string, any]) => {
+          documentation.parameters![paramName] = {
+            type: paramData.type || 'string',
+            description: paramData.description || '',
+            required: paramData.required || false,
+            example: paramData.example
+          };
+        });
+      }
+      
       // Add examples if available
       if (endpointData.examples && Array.isArray(endpointData.examples)) {
         endpointData.examples.forEach((example: any, index: number) => {

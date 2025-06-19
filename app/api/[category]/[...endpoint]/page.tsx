@@ -41,6 +41,7 @@ async function getEndpointData(category: string, endpoint: string[]) {
     const endpointData = await apiClient.getEndpointDocumentation(fullPath);
     return endpointData;
   } catch (error) {
+    const endpointPath = endpoint.join('/');
     console.error(`Failed to fetch endpoint data for ${category}/${endpointPath}:`, error);
     return null;
   }
@@ -117,6 +118,50 @@ export default async function EndpointPage({ params }: EndpointPageProps) {
           </Link>
         </Button>
       </div>
+
+      {/* Parameters */}
+      {endpointData.parameters && Object.keys(endpointData.parameters).length > 0 && (
+        <div className="mb-12">
+          <h2 className="text-xl font-heading font-semibold text-gray-900 dark:text-white mb-6">
+            Parameters
+          </h2>
+          
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                {Object.entries(endpointData.parameters).map(([paramName, paramData]) => {
+                  const param = paramData as any; // Type assertion for parameter data
+                  return (
+                    <div key={paramName} className="flex items-start space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <code className="text-sm font-mono text-primary bg-primary/10 px-2 py-1 rounded">
+                          {paramName}
+                        </code>
+                        <Badge variant={param.required ? 'error' : 'default'} size="sm">
+                          {param.required ? 'required' : 'optional'}
+                        </Badge>
+                        <Badge variant="default" size="sm">
+                          {param.type}
+                        </Badge>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          {param.description}
+                        </p>
+                        {param.example && (
+                          <code className="text-xs text-gray-500 dark:text-gray-400 mt-1 block">
+                            Example: {JSON.stringify(param.example)}
+                          </code>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Examples */}
       {endpointData.response_examples && Object.keys(endpointData.response_examples).length > 0 && (
