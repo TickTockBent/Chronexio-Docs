@@ -219,60 +219,6 @@ export default async function EndpointPage({ params }: EndpointPageProps) {
         </div>
       )}
 
-      {/* Rate Limits & Access */}
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Rate Limits */}
-        {endpointData.rate_limits && (
-          <div>
-            <h2 className="text-xl font-heading font-semibold text-gray-900 dark:text-white mb-6">
-              Rate Limits
-            </h2>
-            
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-3">
-                  {Object.entries(endpointData.rate_limits).map(([tier, limit]) => (
-                    <div key={tier} className="flex items-center justify-between">
-                      <span className="font-medium text-gray-900 dark:text-white capitalize">
-                        {tier}
-                      </span>
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        {limit}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Tier Access */}
-        {endpointData.tier_access && (
-          <div>
-            <h2 className="text-xl font-heading font-semibold text-gray-900 dark:text-white mb-6">
-              Tier Access
-            </h2>
-            
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-3">
-                  {Object.entries(endpointData.tier_access).map(([tier, access]) => (
-                    <div key={tier} className="flex items-start space-x-3">
-                      <span className="font-medium text-gray-900 dark:text-white capitalize min-w-0">
-                        {tier}
-                      </span>
-                      <span className="text-sm text-gray-600 dark:text-gray-300 flex-1">
-                        {access}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

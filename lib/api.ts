@@ -72,8 +72,6 @@ export interface EndpointDocumentation {
     description: string;
     example?: unknown;
   }>;
-  tier_access?: Record<string, string>;
-  rate_limits?: Record<string, string>;
   see_also?: string[];
 }
 
@@ -274,18 +272,6 @@ class ApiClient {
                 data: { example: 'Response data varies by endpoint' },
                 meta: { timestamp: new Date().toISOString(), request_id: 'uuid' }
               }
-            },
-            tier_access: {
-              'free': 'Limited requests per month',
-              'developer': 'Higher rate limits',
-              'team': 'Team features and analytics',
-              'enterprise': 'Enterprise features and support'
-            },
-            rate_limits: {
-              'free': '1,000 requests/month',
-              'developer': '50,000 requests/month',
-              'team': '500,000 requests/month',
-              'enterprise': 'Custom limits'
             }
           });
         }
@@ -363,21 +349,6 @@ class ApiClient {
         documentation.see_also = endpointData.related_endpoints;
       }
       
-      // Add tier access information
-      documentation.tier_access = {
-        'free': 'Limited requests per month',
-        'developer': 'Higher rate limits',
-        'team': 'Team features and analytics',
-        'enterprise': 'Enterprise features and support'
-      };
-      
-      // Add rate limits
-      documentation.rate_limits = {
-        'free': '1,000 requests/month',
-        'developer': '50,000 requests/month',
-        'team': '500,000 requests/month',
-        'enterprise': 'Custom limits'
-      };
       
       return documentation;
       
