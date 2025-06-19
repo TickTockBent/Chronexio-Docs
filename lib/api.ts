@@ -246,38 +246,50 @@ class ApiClient {
         };
       }
       
-      // Convert EndpointInfo to EndpointDocumentation format
-      const endpoints: EndpointDocumentation[] = categoryInfo.endpoints.map(endpoint => ({
-        endpoint: endpoint.endpoint,
-        methods: endpoint.methods,
-        category: endpoint.category,
-        description: endpoint.description || `${categoryInfo.name} endpoint`,
-        authentication: 'Required - API key in Authorization header',
-        response_fields: {
-          'success': 'Boolean indicating request success',
-          'data': 'Response payload containing the requested data',
-          'meta': 'Request metadata including timestamp and request_id'
-        },
-        response_examples: {
-          'success': {
-            success: true,
-            data: { example: 'Response data varies by endpoint' },
-            meta: { timestamp: new Date().toISOString(), request_id: 'uuid' }
-          }
-        },
-        tier_access: {
-          'free': 'Limited requests per month',
-          'developer': 'Higher rate limits',
-          'team': 'Team features and analytics',
-          'enterprise': 'Enterprise features and support'
-        },
-        rate_limits: {
-          'free': '1,000 requests/month',
-          'developer': '50,000 requests/month',
-          'team': '500,000 requests/month',
-          'enterprise': 'Custom limits'
+      // Convert EndpointInfo to EndpointDocumentation format with second-layer discovery
+      const endpoints: EndpointDocumentation[] = [];
+      
+      for (const endpoint of categoryInfo.endpoints) {
+        try {
+          // Try to get detailed documentation using second-layer discovery
+          const detailedDoc = await this.getEndpointDocumentation(endpoint.endpoint);
+          endpoints.push(detailedDoc);
+        } catch (error) {
+          // Fallback to basic endpoint info if second-layer discovery fails
+          console.warn(`Second-layer discovery failed for ${endpoint.endpoint}, using basic info`);
+          endpoints.push({
+            endpoint: endpoint.endpoint,
+            methods: endpoint.methods,
+            category: endpoint.category,
+            description: endpoint.description || `${categoryInfo.name} endpoint`,
+            authentication: 'Required - API key in Authorization header',
+            response_fields: {
+              'success': 'Boolean indicating request success',
+              'data': 'Response payload containing the requested data',
+              'meta': 'Request metadata including timestamp and request_id'
+            },
+            response_examples: {
+              'basic': {
+                success: true,
+                data: { example: 'Response data varies by endpoint' },
+                meta: { timestamp: new Date().toISOString(), request_id: 'uuid' }
+              }
+            },
+            tier_access: {
+              'free': 'Limited requests per month',
+              'developer': 'Higher rate limits',
+              'team': 'Team features and analytics',
+              'enterprise': 'Enterprise features and support'
+            },
+            rate_limits: {
+              'free': '1,000 requests/month',
+              'developer': '50,000 requests/month',
+              'team': '500,000 requests/month',
+              'enterprise': 'Custom limits'
+            }
+          });
         }
-      }));
+      }
       
       return {
         category,
@@ -307,21 +319,84 @@ class ApiClient {
   }
 
   async getEndpointDocumentation(path: string): Promise<EndpointDocumentation> {
-    const response = await this.fetchApi<EndpointDocumentation>(`/v1${path}`);
-    
-    if (!response.success || !response.data) {
+    try {
+      // Use the second layer discovery to get detailed endpoint information
+      const response = await fetch(`${this.baseUrl}${path}`, {
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const endpointData = await response.json();
+      
+      // Transform the discovery response into EndpointDocumentation format
+      const documentation: EndpointDocumentation = {
+        endpoint: endpointData.path || path,
+        methods: [endpointData.method || 'GET'],
+        category: path.split('/')[2] || 'api', // Extract category from path like /v1/uuid/v4
+        description: endpointData.description || `API endpoint: ${path}`,
+        authentication: endpointData.authentication || 'Bearer token required',
+        response_fields: {
+          'success': 'Boolean indicating request success',
+          'data': 'Response payload with the generated data',
+          'meta': 'Request metadata including timestamp and request_id'
+        },
+        response_examples: {}
+      };
+      
+      // Add examples if available
+      if (endpointData.examples && Array.isArray(endpointData.examples)) {
+        endpointData.examples.forEach((example: any, index: number) => {
+          documentation.response_examples![`example_${index + 1}`] = {
+            description: example.description,
+            request: example.request,
+            response: example.response
+          };
+        });
+      }
+      
+      // Add related endpoints if available
+      if (endpointData.related_endpoints && Array.isArray(endpointData.related_endpoints)) {
+        documentation.see_also = endpointData.related_endpoints;
+      }
+      
+      // Add tier access information
+      documentation.tier_access = {
+        'free': 'Limited requests per month',
+        'developer': 'Higher rate limits',
+        'team': 'Team features and analytics',
+        'enterprise': 'Enterprise features and support'
+      };
+      
+      // Add rate limits
+      documentation.rate_limits = {
+        'free': '1,000 requests/month',
+        'developer': '50,000 requests/month',
+        'team': '500,000 requests/month',
+        'enterprise': 'Custom limits'
+      };
+      
+      return documentation;
+      
+    } catch (error) {
+      console.error(`Endpoint documentation fetch failed for ${path}:`, error);
       // Return fallback data for build time
       return {
         endpoint: path,
-        methods: ['GET', 'POST'],
-        category: 'api',
+        methods: ['GET'],
+        category: path.split('/')[2] || 'api',
         description: `API endpoint: ${path}`,
-        authentication: 'Required - API key in Authorization header',
-        response_fields: {},
+        authentication: 'Bearer token required',
+        response_fields: {
+          'success': 'Boolean indicating request success',
+          'data': 'Response payload',
+          'meta': 'Request metadata'
+        },
       };
     }
-
-    return response.data;
   }
 
   async getApiStatus(): Promise<{ status: 'online' | 'degraded' | 'offline'; uptime: string }> {

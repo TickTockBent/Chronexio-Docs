@@ -151,7 +151,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <div className="space-y-4">
             {categoryData.endpoints.map((endpoint, index) => (
               <Card key={index} className="mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                <Link href={`/api/${category}${endpoint.endpoint.replace(`/v1/${category}`, '')}`} className="block p-6 hover:bg-gray-50">
+                <Link href={`/api/${category}${endpoint.endpoint.replace(`/v1/${category}/`, '/')}`} className="block p-6 hover:bg-gray-50">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3 flex-1 min-w-0">
