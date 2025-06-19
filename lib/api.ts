@@ -270,7 +270,8 @@ class ApiClient {
         endpoints,
         total_endpoints: endpoints.length,
         examples: {
-          basic: `curl -H "Authorization: Bearer cx_live_your_api_key" https://api.chronexio.com${endpoints[0]?.endpoint || '/v1/' + category}`
+          basic: `curl -H "Authorization: Bearer cx_live_your_api_key" \\
+  https://api.chronexio.com${endpoints[0]?.endpoint || '/v1/' + category}`
         },
         getting_started: {
           step1: 'Get an API key from https://portal.chronexio.com',
