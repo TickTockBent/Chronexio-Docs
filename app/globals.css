@@ -110,6 +110,13 @@
     @apply card-interactive border-l-4 border-l-primary/20 hover:border-l-primary;
   }
   
+  /* Fix text rendering issues */
+  .endpoint-description {
+    @apply text-sm text-gray-600 leading-relaxed break-words;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  
   .status-indicator {
     @apply w-2 h-2 rounded-full animate-pulse-slow;
   }

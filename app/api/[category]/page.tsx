@@ -150,36 +150,32 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         {categoryData?.endpoints ? (
           <div className="space-y-4">
             {categoryData.endpoints.map((endpoint, index) => (
-              <Card key={index} interactive asChild>
-                <Link href={`/api/${category}${endpoint.endpoint.replace(`/v1/${category}`, '')}`}>
-                  <CardHeader>
+              <Card key={index} className="mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <Link href={`/api/${category}${endpoint.endpoint.replace(`/v1/${category}`, '')}`} className="block p-6 hover:bg-gray-50">
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center space-x-2">
-                          {endpoint.methods.map((method) => {
-                            const methodConfig = HTTP_METHODS[method as keyof typeof HTTP_METHODS];
-                            return (
-                              <span 
-                                key={method} 
-                                className={`${methodConfig?.color || 'badge-default'} text-xs font-medium px-2 py-0.5 rounded-full`}
-                              >
-                                {method}
-                              </span>
-                            );
-                          })}
+                      <div className="flex items-center space-x-3 flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                          {endpoint.methods.map((method) => (
+                            <Badge 
+                              key={method} 
+                              variant={method === 'GET' ? 'success' : method === 'POST' ? 'primary' : 'default'}
+                              size="sm"
+                            >
+                              {method}
+                            </Badge>
+                          ))}
                         </div>
-                        <code className="text-sm font-code text-gray-900 dark:text-white">
+                        <code className="text-sm font-mono text-gray-900 dark:text-white truncate">
                           {endpoint.endpoint}
                         </code>
                       </div>
-                      <ExternalLink className="h-4 w-4 text-gray-400" />
+                      <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 ml-2" />
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                       {endpoint.description}
-                    </CardDescription>
-                  </CardContent>
+                    </div>
+                  </div>
                 </Link>
               </Card>
             ))}
