@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Header } from '@/components/navigation/Header';
 import { Footer } from '@/components/navigation/Footer';
 
@@ -78,17 +77,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-body antialiased`}>
-        <ThemeProvider>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        </ThemeProvider>
+    <html lang="en">
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-body antialiased bg-white`}>
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </div>
       </body>
     </html>
   );

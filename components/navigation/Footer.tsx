@@ -64,7 +64,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-dark-bg text-white">
+    <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
           {/* Brand Section */}
@@ -78,7 +78,7 @@ export function Footer() {
               </div>
               <span>Chronexio</span>
             </Link>
-            <p className="text-gray-400 text-sm mb-4 max-w-xs">
+            <p className="text-gray-300 text-sm mb-4 max-w-xs">
               {SITE_CONFIG.description}
             </p>
             
@@ -98,7 +98,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                      className="text-gray-300 hover:text-white transition-colors text-sm"
                       target={link.href.startsWith('http') ? '_blank' : undefined}
                       rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     >
@@ -112,8 +112,8 @@ export function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-dark-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="text-sm text-gray-400 mb-4 md:mb-0">
+        <div className="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <div className="text-sm text-gray-300 mb-4 md:mb-0">
             © {currentYear} Chronexio. All rights reserved.
           </div>
           
@@ -125,7 +125,7 @@ export function Footer() {
                 <Link
                   key={social.label}
                   href={social.href}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                   title={social.label}

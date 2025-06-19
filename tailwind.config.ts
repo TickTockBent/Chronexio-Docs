@@ -6,14 +6,13 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
           DEFAULT: '#0066ff',
           dark: '#0052cc',
-          light: '#3385ff',
+          light: '#4d94ff',
         },
         success: {
           DEFAULT: '#00ff88',

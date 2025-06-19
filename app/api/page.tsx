@@ -53,7 +53,7 @@ export default async function ApiReferencePage() {
       <div className="text-center mb-12">
         <div className="flex items-center justify-center mb-4">
           <Badge variant="success" className="flex items-center space-x-1">
-            <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             <span>API Status: {statusData.status}</span>
           </Badge>
         </div>

@@ -20,131 +20,73 @@ export default function HomePage() {
   }
 }`;
 
-  const features = [
-    {
-      icon: Zap,
-      title: 'Lightning Fast',
-      description: 'Sub-millisecond response times with global edge deployment',
-    },
-    {
-      icon: Shield,
-      title: 'Enterprise Ready',
-      description: 'SOC2 compliant with 99.99% uptime SLA',
-    },
-    {
-      icon: Code,
-      title: 'Developer First',
-      description: 'Clean APIs, comprehensive docs, and extensive SDKs',
-    },
-    {
-      icon: Gauge,
-      title: 'Scalable',
-      description: 'From startup to enterprise, built to handle any scale',
-    },
-  ];
-
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-b from-gray-50 to-white dark:from-dark-bg dark:to-dark-surface">
-        <div className="container mx-auto container-padding text-center">
-          <div className="max-w-4xl mx-auto">
-            <Badge variant="primary" className="mb-6">
-              API Documentation
-            </Badge>
-            
-            <h1 className="text-4xl md:text-6xl font-heading font-bold text-gray-900 dark:text-white mb-6">
-              Developer infrastructure that moves at the{' '}
-              <span className="gradient-text">speed of thought</span>
+      {/* Documentation Header */}
+      <section className="py-12 bg-white border-b border-gray-100">
+        <div className="container mx-auto container-padding">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-4">
+              Chronexio API Documentation
             </h1>
             
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-              Complete documentation for Chronexio APIs. Generate UUIDs, hash data, process text, 
-              and more with enterprise-grade reliability and performance.
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              Complete reference documentation for UUID generation, hashing, text processing, 
+              and data conversion APIs.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild>
                 <Link href="/getting-started">
                   Get Started
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               
-              <Button variant="secondary" size="lg" asChild>
-                <Link href="/api">View API Reference</Link>
+              <Button variant="secondary" asChild>
+                <Link href="/api">Browse APIs</Link>
+              </Button>
+              
+              <Button variant="ghost" asChild>
+                <Link href="https://portal.chronexio.com">
+                  Get API Key
+                </Link>
               </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Quick Start Section */}
-      <section className="section-padding">
+      {/* Quick Example */}
+      <section className="py-12 bg-gray-50">
         <div className="container mx-auto container-padding">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-heading font-bold text-gray-900 dark:text-white mb-4">
-                Quick Start
-              </h2>
-              <p className="text-lg text-gray-600 dark:text-gray-300">
-                Get your first API response in under 30 seconds
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    1
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                      Get your API key
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      Sign up at{' '}
-                      <Link href="https://portal.chronexio.com" className="text-primary hover:underline">
-                        portal.chronexio.com
-                      </Link>{' '}
-                      and generate your API key instantly.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    2
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                      Make your first request
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      Use the example on the right to generate your first UUID.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-success text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    ✓
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                      Start building
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      Explore our comprehensive API reference and integration guides.
-                    </p>
-                  </div>
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h2 className="text-2xl font-heading font-semibold text-gray-900 mb-4">
+                  Quick Example
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Generate a UUID with a simple API call. Get your API key from the{' '}
+                  <Link href="https://portal.chronexio.com" className="text-primary hover:underline">
+                    Chronexio Portal
+                  </Link>{' '}
+                  to get started.
+                </p>
+                <div className="flex gap-3">
+                  <Button asChild size="sm">
+                    <Link href="/getting-started">View Setup Guide</Link>
+                  </Button>
+                  <Button variant="secondary" size="sm" asChild>
+                    <Link href="/api/uuid">UUID Documentation</Link>
+                  </Button>
                 </div>
               </div>
               
               <CodeBlock 
                 code={quickStartExample}
                 language="bash"
-                title="Generate UUID"
+                title="Example Request"
               />
             </div>
           </div>
@@ -152,18 +94,18 @@ export default function HomePage() {
       </section>
 
       {/* API Categories */}
-      <section className="section-padding bg-gray-50 dark:bg-dark-surface/50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto container-padding">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-heading font-bold text-gray-900 dark:text-white mb-4">
-              API Categories
+            <h2 className="text-2xl font-heading font-semibold text-gray-900 mb-4">
+              Browse API Documentation
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Comprehensive APIs for all your development needs
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Explore our comprehensive API documentation organized by category
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {Object.entries(API_CATEGORIES).map(([key, category]) => (
               <Card key={key} interactive asChild>
                 <Link href={`/api/${key}`}>
@@ -171,16 +113,15 @@ export default function HomePage() {
                     <div className="flex items-center space-x-3">
                       <div className={`p-2 rounded-lg ${category.bgColor}`}>
                         <div className={`w-5 h-5 ${category.color}`}>
-                          {/* Icon would go here - simplified for now */}
                           <div className="w-full h-full bg-current rounded-sm opacity-80" />
                         </div>
                       </div>
-                      <CardTitle>{category.title}</CardTitle>
+                      <CardTitle className="text-base">{category.title}</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription>{category.description}</CardDescription>
-                    <div className="mt-4 flex items-center text-primary text-sm font-medium">
+                    <CardDescription className="text-sm mb-3">{category.description}</CardDescription>
+                    <div className="flex items-center text-primary text-sm font-medium">
                       View Documentation
                       <ArrowRight className="ml-1 h-4 w-4" />
                     </div>
@@ -192,55 +133,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="section-padding">
+      {/* Additional Resources */}
+      <section className="py-12 bg-gray-50 border-t border-gray-100">
         <div className="container mx-auto container-padding">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-heading font-bold text-gray-900 dark:text-white mb-4">
-              Why Choose Chronexio?
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-xl font-heading font-semibold text-gray-900 mb-6">
+              Need More Help?
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Built for developers who demand performance and reliability
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <div key={index} className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 text-primary rounded-lg mb-4">
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    {feature.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="section-padding bg-primary text-white">
-        <div className="container mx-auto container-padding text-center">
-          <h2 className="text-3xl font-heading font-bold mb-4">
-            Ready to start building?
-          </h2>
-          <p className="text-xl text-primary-light mb-8 max-w-2xl mx-auto">
-            Join thousands of developers who trust Chronexio for their infrastructure needs.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="secondary" size="lg" asChild>
-              <Link href="/getting-started">Get Started</Link>
-            </Button>
-            <Button variant="ghost" size="lg" asChild className="text-white border-white hover:bg-white/10">
-              <Link href="https://portal.chronexio.com">Get API Key</Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="secondary" size="sm" asChild>
+                <Link href="/guides">View Guides</Link>
+              </Button>
+              <Button variant="secondary" size="sm" asChild>
+                <Link href="/examples">Code Examples</Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="https://portal.chronexio.com">Portal Dashboard</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
