@@ -148,32 +148,32 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </h2>
         
         {categoryData?.endpoints ? (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {categoryData.endpoints.map((endpoint, index) => (
-              <Card key={index} className="mb-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                <Link href={`/api/${category}${endpoint.endpoint.replace(`/v1/${category}/`, '/')}`} className="block p-6 hover:bg-gray-50">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3 flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 flex-shrink-0">
-                          {endpoint.methods.map((method) => (
-                            <Badge 
-                              key={method} 
-                              variant={method === 'GET' ? 'success' : method === 'POST' ? 'primary' : 'default'}
-                              size="sm"
-                            >
-                              {method}
-                            </Badge>
-                          ))}
-                        </div>
-                        <code className="text-sm font-mono text-gray-900 dark:text-white truncate">
-                          {endpoint.endpoint}
-                        </code>
+              <Card key={index} className="border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 h-full">
+                <Link href={`/api/${category}${endpoint.endpoint.replace(`/v1/${category}/`, '/')}`} className="block p-4 hover:bg-gray-50 h-full">
+                  <div className="flex flex-col h-full space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-2 flex-shrink-0">
+                        {endpoint.methods.map((method) => (
+                          <Badge 
+                            key={method} 
+                            variant={method === 'GET' ? 'success' : method === 'POST' ? 'primary' : 'default'}
+                            size="sm"
+                          >
+                            {method}
+                          </Badge>
+                        ))}
                       </div>
-                      <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0 ml-2" />
+                      <ExternalLink className="h-4 w-4 text-gray-400 flex-shrink-0" />
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {endpoint.description}
+                    <div className="flex-1">
+                      <code className="text-sm font-mono text-gray-900 dark:text-white block mb-2 break-all">
+                        {endpoint.endpoint}
+                      </code>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3">
+                        {endpoint.description}
+                      </p>
                     </div>
                   </div>
                 </Link>
