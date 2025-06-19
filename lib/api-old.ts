@@ -130,7 +130,7 @@ class ApiClient {
 
   async getApiDocumentation(category?: string): Promise<DocsApiResponse> {
     try {
-      // Get the main API info to find available services
+      // Get the main API info that contains all endpoints
       const response = await fetch(`${this.baseUrl}/v1`, {
         headers: { 'Content-Type': 'application/json' },
         cache: 'no-store',
@@ -146,52 +146,106 @@ class ApiClient {
       const categories: Record<string, CategoryInfo> = {};
       const endpoints: EndpointInfo[] = [];
       
-      if (apiInfo.browse_services) {
-        // Process each service category
-        for (const [categoryKey, serviceInfo] of Object.entries(apiInfo.browse_services)) {
+      if (apiInfo.endpoints) {
+        Object.entries(apiInfo.endpoints).forEach(([categoryKey, categoryEndpoints]) => {
           const categoryInfo = API_CATEGORIES[categoryKey as keyof typeof API_CATEGORIES];
           
-          if (categoryInfo && typeof serviceInfo === 'object' && serviceInfo !== null) {
-            try {
-              // Fetch detailed endpoint information for this category
-              const categoryResponse = await fetch(`${this.baseUrl}/v1/${categoryKey}`, {
-                headers: { 'Content-Type': 'application/json' },
-                cache: 'no-store',
-              });
+          if (categoryInfo && Array.isArray(categoryEndpoints)) {
+            const categoryEndpointList: EndpointInfo[] = [];
+            
+            (categoryEndpoints as string[]).forEach((endpointString: string) => {
+              // Split by whitespace and filter out empty strings to handle multiple spaces
+              const parts = endpointString.split(/\s+/).filter(part => part.length > 0);
+              const [method, path] = parts;
               
-              if (categoryResponse.ok) {
-                const categoryData = await categoryResponse.json();
-                const categoryEndpointList: EndpointInfo[] = [];
+              // Generate better descriptions based on the endpoint path
+              const getEndpointDescription = (path: string, category: string) => {
+                const pathParts = path.split('/').filter(p => p);
+                const lastPart = pathParts[pathParts.length - 1];
                 
-                if (categoryData.endpoints && Array.isArray(categoryData.endpoints)) {
-                  categoryData.endpoints.forEach((endpointData: any) => {
-                    const endpoint: EndpointInfo = {
-                      endpoint: endpointData.path,
-                      category: categoryKey,
-                      methods: [endpointData.method],
-                      description: endpointData.description || `${categoryInfo.title} endpoint`,
-                      documentation_url: `/api/${categoryKey}#${endpointData.path.replace(/\//g, '-')}`
-                    };
-                    
-                    categoryEndpointList.push(endpoint);
-                    if (!category || category === categoryKey) {
-                      endpoints.push(endpoint);
+                switch (category) {
+                  case 'uuid':
+                    if (lastPart.startsWith('v') && lastPart.length === 2) {
+                      return `Generate UUID ${lastPart.toUpperCase()}`;
+                    } else if (lastPart === 'bulk') {
+                      return 'Generate multiple UUIDs in a single request';
+                    } else if (lastPart === 'validate') {
+                      return 'Validate UUID format and version';
+                    } else if (lastPart === 'ct-uuidv8') {
+                      return 'Generate ChronexTime UUID v8 with embedded timestamp';
                     }
-                  });
+                    break;
+                  case 'hash':
+                    if (lastPart === 'string') {
+                      return 'Hash text strings using various algorithms';
+                    } else if (lastPart === 'file') {
+                      return 'Generate hash of uploaded files';
+                    } else if (lastPart === 'batch') {
+                      return 'Hash multiple items in one request';
+                    }
+                    break;
+                  case 'random':
+                    if (lastPart === 'string') {
+                      return 'Generate random strings with custom length and charset';
+                    } else if (lastPart === 'bytes') {
+                      return 'Generate cryptographically secure random bytes';
+                    } else if (lastPart === 'nonce') {
+                      return 'Generate cryptographic nonce values';
+                    } else if (lastPart === 'salt') {
+                      return 'Generate random salt for password hashing';
+                    } else if (lastPart.includes('token')) {
+                      return `Generate secure ${lastPart.replace('token/', '').replace('-', ' ')} tokens`;
+                    } else if (lastPart.includes('id')) {
+                      return `Generate unique ${lastPart.replace('-', ' ')} identifiers`;
+                    }
+                    break;
+                  case 'text':
+                    if (path.includes('analyze')) {
+                      return `Analyze text for ${lastPart} extraction`;
+                    } else if (path.includes('extract')) {
+                      return `Extract ${lastPart} from text content`;
+                    } else if (path.includes('validate')) {
+                      return `Validate ${lastPart} format and structure`;
+                    } else if (path.includes('generate')) {
+                      return `Generate ${lastPart} text content`;
+                    }
+                    break;
+                  case 'convert':
+                    if (lastPart === 'encode') {
+                      return 'Encode data in various formats (base64, hex, etc.)';
+                    } else if (lastPart === 'decode') {
+                      return 'Decode data from various formats';
+                    } else if (lastPart === 'batch') {
+                      return 'Encode multiple items in one request';
+                    }
+                    break;
                 }
                 
-                categories[categoryKey] = {
-                  name: categoryInfo.title,
-                  description: categoryInfo.description,
-                  endpoints: categoryEndpointList,
-                  subcategories: []
-                };
+                return `${categoryInfo.title} API endpoint: ${path}`;
+              };
+              
+              const endpoint: EndpointInfo = {
+                endpoint: path,
+                category: categoryKey,
+                methods: [method],
+                description: getEndpointDescription(path, categoryKey),
+                documentation_url: `/api/${categoryKey}#${path.replace(/\//g, '-')}`
+              };
+              
+              categoryEndpointList.push(endpoint);
+              if (!category || category === categoryKey) {
+                endpoints.push(endpoint);
               }
-            } catch (categoryError) {
-              console.error(`Failed to fetch category ${categoryKey}:`, categoryError);
-            }
+            });
+            
+            categories[categoryKey] = {
+              name: categoryInfo.title,
+              description: categoryInfo.description,
+              endpoints: categoryEndpointList,
+              subcategories: []
+            };
           }
-        }
+        });
       }
       
       return {
@@ -251,7 +305,7 @@ class ApiClient {
         endpoint: endpoint.endpoint,
         methods: endpoint.methods,
         category: endpoint.category,
-        description: endpoint.description,
+        description: endpoint.description || `${categoryInfo.name} endpoint`,
         authentication: 'Required - API key in Authorization header',
         response_fields: {
           'success': 'Boolean indicating request success',

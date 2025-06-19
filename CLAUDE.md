@@ -11,6 +11,53 @@ This is the Chronexio API documentation repository containing comprehensive mark
 - **Style Guide**: Brand and design system guidelines for consistent UI implementation
 - **Site Specification**: Technical architecture for the documentation website
 
+## Development Commands
+
+### Essential Commands
+```bash
+# Development server on port 3001
+npm run dev
+
+# Production build
+npm run build
+
+# Start production server on port 3001
+npm start
+
+# Linting (ALWAYS run before committing)
+npm run lint
+
+# Type checking (ALWAYS run before committing)
+npm run type-check
+```
+
+### Development Workflow
+1. Run `npm run dev` to start the development server
+2. Before committing changes, ALWAYS run both `npm run lint` and `npm run type-check`
+3. The site runs on port 3001 to avoid conflicts with other services
+
+## Architecture Overview
+
+### Next.js 15 App Router Structure
+This is a Next.js 15 application using the App Router with TypeScript. Key architectural patterns:
+
+**Dynamic API Documentation**: The `/api/[category]` pages dynamically fetch live API documentation from `https://api.chronexio.com/v1` and render it with fallback handling for build time.
+
+**API Client (`lib/api.ts`)**: Centralized API client with error handling and fallback data. The `apiClient.getCategoryDocumentation()` method transforms live API responses into documentation structure.
+
+**Constants (`lib/constants.ts`)**: Configuration for API categories, navigation, colors, and UI constants. The `API_CATEGORIES` object defines the 5 main API categories: uuid, hash, convert, random, text.
+
+**Component System**: Located in `/components/ui/` with consistent design system components (Card, Button, Badge, CodeBlock) following the Chronexio brand guidelines.
+
+**Styling**: Tailwind CSS with custom theme extending brand colors (Electric Blue #0066ff, Neon Green #00ff88, Deep Space #0a0a0f). Custom font setup with Space Grotesk, Inter, and JetBrains Mono.
+
+### Key Files to Understand
+- `app/api/[category]/page.tsx` - Dynamic API category pages that fetch and render live documentation
+- `lib/api.ts` - API client with live data fetching and fallback handling  
+- `lib/constants.ts` - Core configuration and category definitions
+- `app/layout.tsx` - Root layout with font setup and metadata
+- `tailwind.config.ts` - Custom theme with brand colors and typography
+
 ## Repository Structure
 
 ```
