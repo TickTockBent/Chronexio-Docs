@@ -12,13 +12,14 @@ import { apiClient } from '@/lib/api';
 interface EndpointPageProps {
   params: Promise<{
     category: string;
-    endpoint: string;
+    endpoint: string[];
   }>;
 }
 
 export async function generateMetadata({ params }: EndpointPageProps) {
   const { category, endpoint } = await params;
   const categoryInfo = API_CATEGORIES[category as keyof typeof API_CATEGORIES];
+  const endpointPath = endpoint.join('/');
   
   if (!categoryInfo) {
     return {
@@ -27,19 +28,20 @@ export async function generateMetadata({ params }: EndpointPageProps) {
   }
 
   return {
-    title: `${endpoint} - ${categoryInfo.title} API`,
-    description: `Complete documentation for the ${endpoint} endpoint in the ${categoryInfo.title} API.`,
+    title: `${endpointPath} - ${categoryInfo.title} API`,
+    description: `Complete documentation for the ${endpointPath} endpoint in the ${categoryInfo.title} API.`,
   };
 }
 
-async function getEndpointData(category: string, endpoint: string) {
+async function getEndpointData(category: string, endpoint: string[]) {
   try {
     // Reconstruct the full endpoint path
-    const fullPath = `/v1/${category}/${endpoint}`;
+    const endpointPath = endpoint.join('/');
+    const fullPath = `/v1/${category}/${endpointPath}`;
     const endpointData = await apiClient.getEndpointDocumentation(fullPath);
     return endpointData;
   } catch (error) {
-    console.error(`Failed to fetch endpoint data for ${category}/${endpoint}:`, error);
+    console.error(`Failed to fetch endpoint data for ${category}/${endpointPath}:`, error);
     return null;
   }
 }
@@ -47,6 +49,7 @@ async function getEndpointData(category: string, endpoint: string) {
 export default async function EndpointPage({ params }: EndpointPageProps) {
   const { category, endpoint } = await params;
   const categoryInfo = API_CATEGORIES[category as keyof typeof API_CATEGORIES];
+  const endpointPath = endpoint.join('/');
   
   if (!categoryInfo) {
     notFound();
@@ -70,7 +73,7 @@ export default async function EndpointPage({ params }: EndpointPageProps) {
           {categoryInfo.title}
         </Link>
         <span>/</span>
-        <span className="text-gray-900 dark:text-white">{endpoint}</span>
+        <span className="text-gray-900 dark:text-white">{endpointPath}</span>
       </nav>
 
       {/* Header */}
